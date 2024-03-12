@@ -1,0 +1,14 @@
+﻿@model ProductsIndexViewModel
+
+
+<div class="row">
+    @foreach(var product in Model.Products)
+    { 
+        <div class="col col-lg-2 text-center border border-1 rounded-2 m-2">
+            <p><img class="m-2" src="https://placehold.co/150x100" /></p>
+            <h6>@product.Name</h6>
+            <a asp-action="Detail" asp-route-id="@product.Id" class="btn btn-outline-primary mb-2">Info</a>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,21 @@
+﻿@model ProductsDetailviewModel
+
+<div class="row">
+    <div class="col col-lg-4 mx-auto">
+        <div class="card" style="width: 18rem;">
+            <!--tips: add .text-center,.text-right to the .card to change card text alignment-->
+            <img src="https://placehold.co/300x200" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Name</h5>
+                <h6 class="card-subtitle mb-2 text-muted">@Model.Category</h6>
+                <h6 class="card-subtitle mb-2 text-muted">@Model.Price.ToString("C2")</h6>
+                @foreach (var property in Model.Properties)
+                {
+                    <p class="card-text">@property</p>
+                }
+                <a asp-action="Index" class="btn btn-primary">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+

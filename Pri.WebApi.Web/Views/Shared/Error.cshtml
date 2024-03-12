@@ -1,0 +1,8 @@
+﻿@model IEnumerable<string>
+
+    <div class="alert alert-primary" role="alert">
+        @foreach(var error in Model)
+        { 
+           <b>@error</b>  
+        }
+    </div>
