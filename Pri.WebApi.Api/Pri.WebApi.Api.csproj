@@ -13,4 +13,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Pri.WebApi.Infrastructure\Pri.WebApi.Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
 </Project>

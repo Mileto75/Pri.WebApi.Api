@@ -254,5 +254,6 @@ namespace Pri.CleanArchitecture.Core.Services
                 Errors = new List<string> {"Product not updated!"}
             };
         }
+        
     }
 }

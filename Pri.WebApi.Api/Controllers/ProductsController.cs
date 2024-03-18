@@ -6,6 +6,7 @@ using Pri.WebApi.Food.Api.Dtos;
 using Pri.WebApi.Food.Api.Dtos.Request;
 using Pri.WebApi.Food.Api.Dtos.Response;
 using Pri.WebApi.Food.Api.Extensions;
+using System.Net;
 using System.Xml.Linq;
 
 namespace Pri.WebApi.Food.Api.Controllers
@@ -15,10 +16,14 @@ namespace Pri.WebApi.Food.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IWebHostEnvironment _webHostingEnvironment;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductService productService, IWebHostEnvironment webHostingEnvironment, ILogger<ProductsController> logger)
         {
             _productService = productService;
+            _webHostingEnvironment = webHostingEnvironment;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -128,6 +133,83 @@ namespace Pri.WebApi.Food.Api.Controllers
                         Name = pr.Name,
                     })
             });
+        }
+        //update
+        [HttpPut]
+        public async Task<IActionResult> Update(ProductUpdateDto productUpdateDto)
+        {
+            //check if exists
+            if(!await _productService.ExistsAsync(productUpdateDto.Id))
+            {
+                return NotFound("Product not found!");
+            }
+            //update
+            var result = await _productService
+                .UpdateAsync(
+                productUpdateDto.Id, productUpdateDto.Name,
+                productUpdateDto.CategoryId,
+                productUpdateDto.Description,
+                productUpdateDto.Price,
+                productUpdateDto.PropertyIds
+                );
+            if (!result.IsSuccess)
+            {
+                foreach(var error in  result.Errors)
+                {
+                    ModelState.AddModelError("",error);
+                }
+                return BadRequest(ModelState.Values);
+            }
+            return Ok(result.Result.MapToDto());
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if(!await _productService.ExistsAsync(id))
+            {
+                return NotFound("Product does not exist!");
+            }
+            var result = await _productService.DeleteAsync(id);
+            if(result.IsSuccess)
+            {
+                return Ok("Product Deleted");
+            };
+            foreach(var error in result.Errors)
+            {
+                ModelState.AddModelError("",error);
+            }
+            return BadRequest(ModelState.Values);
+        }
+        [HttpPost("WithImage")]
+        public async Task<IActionResult> CreateWithImage([FromForm]ProductCreateWithImageDto productCreateWithImageDto)
+        {
+            //create a unique filename
+            var filename = $"{Guid.NewGuid()}_{productCreateWithImageDto.Image.FileName}";
+            //create the path to file/image folder
+            var pathToFolder = Path.Combine(_webHostingEnvironment.ContentRootPath,"wwwroot","images");
+            //check if directory
+            if(!Directory.Exists(pathToFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(pathToFolder);
+                }
+                catch(DirectoryNotFoundException directoryNotFoundException)
+                {
+                    //log the error
+                    _logger.LogCritical(directoryNotFoundException.Message);
+                    Response.StatusCode = 500;
+                    return Content("File error");
+                }
+            }
+            //create the full path
+            var fullPath = Path.Combine(pathToFolder,filename);
+            //copy to folder
+            using(FileStream fileStream = new FileStream(fullPath,FileMode.Create))
+            {
+                await productCreateWithImageDto.Image.CopyToAsync(fileStream);
+            }
+            return Ok();
         }
     }
 }
