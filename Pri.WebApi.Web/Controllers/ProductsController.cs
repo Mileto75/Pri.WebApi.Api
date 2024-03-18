@@ -60,6 +60,5 @@ namespace Pri.Cleanarchitecture.Web.Controllers
             }
             return View("Error", result.Errors);
         }
-        
     }
 }
