@@ -18,5 +18,26 @@ namespace Pri.WebApi.Food.Api.Extensions
                 })
             };
         }
+        public static ProductsDetailDto MapToDto(this Product product)
+        {
+            return new ProductsDetailDto 
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Category = new BaseDto 
+                {
+                    Id = product.Category.Id,
+                    Name = product.Category.Name,
+                },
+                Description = product.Description,
+                Properties = product.Properties.Select(p =>
+                new BaseDto 
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                })
+            };
+        }
     }
 }
