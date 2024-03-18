@@ -108,7 +108,14 @@ namespace Pri.CleanArchitecture.Core.Services
                 Errors = new List<string> { "Product not deleted!" }
             };
         }
-
+        public IQueryable<Product> GetAll()
+        {
+            return _productRepository.GetAll();
+        }
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await GetAll().AnyAsync(p => p.Id == id);
+        }
         public async Task<ResultModel<IEnumerable<Product>>> GetAllAsync()
         {
             var products = await _productRepository.GetAllAsync();

@@ -11,7 +11,9 @@ namespace Pri.CleanArchitecture.Core.Interfaces.Services
 {
     public interface IProductService
     {
-        Task<ResultModel<IEnumerable<Product>>> GetAllAsync(); 
+        Task<ResultModel<IEnumerable<Product>>> GetAllAsync();
+        IQueryable<Product> GetAll();
+        Task<bool> ExistsAsync(int id);
         Task<ResultModel<Product>> GetByIdAsync(int id);
         Task<ResultModel<Product>>
             CreateAsync(string name,int categoryId,string description,decimal price, IEnumerable<int> propertyIds);
