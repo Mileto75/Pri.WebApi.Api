@@ -84,9 +84,29 @@ namespace Pri.CleanArchitecture.Core.Services
             };
         }
 
-        public Task<ResultModel<Product>> DeleteAsync(int id)
+        public async Task<ResultModel<Product>> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetByIdAsync(id);
+            if(product == null)
+            {
+                return new ResultModel<Product>
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { "Product does not exist!" }
+                };
+            }
+            if(await _productRepository.DeleteAsync(product))
+            {
+                return new ResultModel<Product>
+                {
+                    IsSuccess = true,
+                };
+            }
+            return new ResultModel<Product>
+            {
+                IsSuccess = false,
+                Errors = new List<string> { "Product not deleted!" }
+            };
         }
 
         public async Task<ResultModel<IEnumerable<Product>>> GetAllAsync()
